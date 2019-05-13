@@ -22,8 +22,21 @@ module.exports = function Model() {
 		'password'
 	];
 
-	this.data = [];
+	this.data = []; // Store the retrieved visible data.
 
+	/*
+	 * void find(id: mixed [, callback: function])
+	 *
+	 * Retrieve a specific record in the database from its id and store its data in the current model object.
+	 *
+	 * @params: - id: identifier of the record.
+	 *          - callback: function to call at the end of the process with the retrieved object.
+	 * @pre: - id must be consistent with the model primary key type.
+	 *       - callback method must accept at least one parameter.
+	 * @post: - lead an mpty array if the record does not exist.
+	 *        - lead a 102 error code if the id has a wrong type.
+	 *        - lead the parsed record if it exists;
+	 */
 	this.find = function(id, callback = undefined) {
 		initialId = id; // Useful to keep the first "version" of the identifier. Checking methods can alter it.
 
@@ -61,6 +74,23 @@ module.exports = function Model() {
 		}
 	};
 
+	/*
+	 * void find(column: string, operator: string, value: mixed, callback: function)
+	 *
+	 * Retrieve all records of the related table in the database which have the specified condition.
+	 *
+	 * @params: - column: condition related column.
+	 *          - operator: conditional operator.
+	 *          - value: condition related value.
+	 *          - callback: function to call at the end of the process with the retrieved objects
+	 * @pre: - column must be a valid string.
+	 *       - operator must be allowed by DataAccess prototype.
+	 *       - value: must be valid.
+	 *       - callback method must accept at least one parameter.
+	 * @post: - lead an mpty array if no records exist with the specified condition.
+	 *        - lead a 101 error code if the query is not valid.
+	 *        - lead the parsed records if they exist.
+	 */
 	this.where = function(column, operator, value, callback) {
 		var isDataValid = true;
 
@@ -97,6 +127,18 @@ module.exports = function Model() {
 		}
 	}
 
+	/*
+	 * void all(callback: function)
+	 *
+	 * Retrieve all records of the related table in the database.
+	 *
+	 * @params: callback: function to call at the end of the process with the retrieved objects
+	 * @pre: - model related table must exist in the database.
+	 *       - callback method must accept at least one parameter.
+	 * @post: - lead an mpty array if no records exist for the related table.
+	 *        - throw error if the table does not exist in the database.
+	 *        - lead the parsed records if they exist.
+	 */
 	this.all = function(callback) {
 		postgresDataAccess.query = 'SELECT * FROM ' + databaseConfig.schema + '.' + this.table;
 
