@@ -22,6 +22,8 @@ module.exports = function Model() {
 		'password'
 	]
 
+	this.data = [];
+
 	this.dataChecking = function(value, XSSSensitive) {
 		switch(this.primaryKeyType) {
 			case 'integer':
@@ -38,5 +40,18 @@ module.exports = function Model() {
 			return value;
 			break;
 		}
+	};
+
+	this.find = function(id) {
+		if((id = this.dataChecking(id)) != false) {
+			postgresDataAccess.query = 'SELECT * FROM ' + databaseConfig.schema + '.' + this.table + ' WHERE ' + this.primaryKey + ' = ?';
+			postgresDataAccess.queryBindings = [id];
+
+			postgresDataAccess.exec(dataAccessExecClosure(this));
+
+			return true;
+		}
+
+		return false;
 	};
 };
