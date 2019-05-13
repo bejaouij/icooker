@@ -24,12 +24,28 @@ module.exports = function Model() {
 
 	this.data = [];
 
-	this.find = function(id) {
-		if((id = postgresDataAccess.dataChecking(id, this.primaryKeyType)) != false) {
+	this.find = function(id, callback = undefined) {
+		if((id = postgresDataAccess.dataChecking(id, this.primaryKeyType, this.primaryKeyType)) != false) {
 			postgresDataAccess.query = 'SELECT * FROM ' + databaseConfig.schema + '.' + this.table + ' WHERE ' + this.primaryKey + ' = ?';
 			postgresDataAccess.queryBindings = [id];
 
-			postgresDataAccess.exec(dataAccessFindClosure(this));
+			// Compulsory to pass the current model object inside the query execution callback function
+			function closureCallback(model) {
+				return function(res) {
+					for(var column in res[0]) {
+						if(!(column in model.data)) {
+							model.data[column] = res[0][column];
+						}
+					};
+
+					if(typeof callback != 'undefined') {
+						callback(model);
+					}
+				}
+			}
+			////////////////////
+
+			postgresDataAccess.exec(closureCallback(this));
 		}
 	};
 
