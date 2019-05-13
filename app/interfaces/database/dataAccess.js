@@ -2,11 +2,26 @@ let databaseConfig = require('../../config/config').database;
 var Database = require('database-js2').Connection;
 
 function PostgresDataAccess() {
+	this.operators = [
+		'<',
+		'<=',
+		'=',
+		'!=',
+		'>',
+		'>=',
+		'LIKE'
+	];
+
+	this.logicSatements = [
+		'OR',
+		'AND'
+	];
+
 	this.query = 'SELECT \'Hello World!\' \"dump\"';
 	this.queryBindings = [];
 	this.modulePerDriver = {
 		'psql': 'database-js-postgres'
-	}
+	};
 
 	this.exec = function(callback) {
 		(async () => {
@@ -29,7 +44,7 @@ function PostgresDataAccess() {
 		        await connection.close();
 		    }
 		})();
-	}
+	};
 };
 
 module.exports = {
