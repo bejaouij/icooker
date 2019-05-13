@@ -1,5 +1,6 @@
 let databaseConfig = require('../../config/config').database;
 var Database = require('database-js2').Connection;
+let htmlHelper = require('../html/htmlHelper');
 
 function PostgresDataAccess() {
 	this.operators = [
@@ -21,6 +22,32 @@ function PostgresDataAccess() {
 	this.queryBindings = [];
 	this.modulePerDriver = {
 		'psql': 'database-js-postgres'
+	};
+
+	this.dataChecking = function(value, XSSSensitive, dataType) {
+		switch(dataType) {
+			case 'integer':
+			return isNaN(value) ? false : value;
+			break;
+
+			case 'string':
+			value = value.replace('\'', '\'\'');
+
+			if(XSSSensitive) {
+				value = htmlHelper.castHTMLSpecialChars(value);
+			}
+
+			return value;
+			break;
+
+			case 'operator':
+			return (this.operators.indexOf(value) == -1) ? false : value;
+			break;
+
+			case 'logicStatment':
+			return (this.logicStatments.indexOf(value) == -1) ? false : value;
+			break;
+		}
 	};
 
 	this.exec = function(callback) {

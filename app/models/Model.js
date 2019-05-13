@@ -1,5 +1,4 @@
 let postgresDataAccess = require('../interfaces/database/dataAccess').postgresql;
-let htmlHelper = require('../interfaces/html/htmlHelper');
 let databaseConfig = require('../config/config').database;
 let errorCode = require('../interfaces/error/error');
 
@@ -25,34 +24,8 @@ module.exports = function Model() {
 
 	this.data = [];
 
-	this.dataChecking = function(value, XSSSensitive, dataType) {
-		switch(dataType) {
-			case 'integer':
-			return isNaN(value) ? false : value;
-			break;
-
-			case 'string':
-			value = value.replace('\'', '\'\'');
-
-			if(XSSSensitive) {
-				value = htmlHelper.castHTMLSpecialChars(value);
-			}
-
-			return value;
-			break;
-
-			case 'operator':
-			return (postgresDataAccess.operators.indexOf(value) == -1) ? false : value;
-			break;
-
-			case 'logicStatment':
-			return (postgresDataAccess.logicStatments.indexOf(value) == -1) ? false : value;
-			break;
-		}
-	};
-
 	this.find = function(id) {
-		if((id = this.dataChecking(id, this.primaryKeyType)) != false) {
+		if((id = postgresDataAccess.dataChecking(id, this.primaryKeyType)) != false) {
 			postgresDataAccess.query = 'SELECT * FROM ' + databaseConfig.schema + '.' + this.table + ' WHERE ' + this.primaryKey + ' = ?';
 			postgresDataAccess.queryBindings = [id];
 
@@ -63,16 +36,16 @@ module.exports = function Model() {
 	this.where = function(column, operator, value, callback) {
 		var isDataValid = true;
 
-		if((column = this.dataChecking(column, true, 'string')) == false) {
+		if((column = postgresDataAccess.dataChecking(column, true, 'string')) == false) {
 			isDataValid = false;
 		}
 
-		if(isDataValid && (operator = this.dataChecking(operator, false, 'operator')) == false) {
+		if(isDataValid && (operator = postgresDataAccess.dataChecking(operator, false, 'operator')) == false) {
 			isDataValid = false;
 		}
 
 		if(isNaN(value)) {
-			if((value = this.dataChecking(value, true, 'string')) == false) {
+			if((value = postgresDataAccess.dataChecking(value, true, 'string')) == false) {
 				isDataValid = false;
 			}
 		}
