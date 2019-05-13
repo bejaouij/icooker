@@ -112,8 +112,22 @@ module.exports = function Model() {
 			postgresDataAccess.query = 'SELECT * FROM ' + databaseConfig.schema + '.' + this.table + ' WHERE ' + column + ' ' + operator + ' ?';
 			postgresDataAccess.queryBindings = [value];
 
+			let model = this;
+
 			postgresDataAccess.exec(function(res) {
-				callback(res);
+				var models = [];
+
+				res.forEach(function(row) {
+					models.push(new model.constructor);
+
+					for(var column in row) {
+						if(model.hidden.indexOf(column) == -1) {
+							models[models.length - 1].data[column] = row[column];
+						}
+					}
+				});
+
+				callback(models);
 			});
 		}
 		else {
@@ -142,8 +156,22 @@ module.exports = function Model() {
 	this.all = function(callback) {
 		postgresDataAccess.query = 'SELECT * FROM ' + databaseConfig.schema + '.' + this.table;
 
+		let model = this;
+
 		postgresDataAccess.exec(function(res) {
-			callback(res);
+			var models = [];
+
+			res.forEach(function(row) {
+				models.push(new model.constructor);
+
+				for(var column in row) {
+					if(model.hidden.indexOf(column) == -1) {
+						models[models.length - 1].data[column] = row[column];
+					}
+				}
+			});
+
+			callback(models);
 		});
 	}
 };
