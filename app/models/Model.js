@@ -50,4 +50,12 @@ module.exports = function Model() {
 			postgresDataAccess.exec(dataAccessFindClosure(this));
 		}
 	};
+
+	this.all = function(callback) {
+		postgresDataAccess.query = 'SELECT * FROM ' + databaseConfig.schema + '.' + this.table;
+
+		postgresDataAccess.exec(function(res) {
+			callback(res);
+		});
+	}
 };
