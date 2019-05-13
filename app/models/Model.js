@@ -25,6 +25,8 @@ module.exports = function Model() {
 	this.data = [];
 
 	this.find = function(id, callback = undefined) {
+		initialId = id; // Useful to keep the first "version" of the identifier. Checking methods can alter it.
+
 		if((id = postgresDataAccess.dataChecking(id, this.primaryKeyType, this.primaryKeyType)) != false) {
 			postgresDataAccess.query = 'SELECT * FROM ' + databaseConfig.schema + '.' + this.table + ' WHERE ' + this.primaryKey + ' = ?';
 			postgresDataAccess.queryBindings = [id];
@@ -46,6 +48,16 @@ module.exports = function Model() {
 			////////////////////
 
 			postgresDataAccess.exec(closureCallback(this));
+		} else {
+			if(typeof callback != 'undefined') {
+				let code = 102;
+
+				callback({
+					ERROR_CODE: code,
+					ERROR_MESSAGE: errorCode[code],
+					RELATED_OBJECT: initialId
+				});
+			}
 		}
 	};
 
