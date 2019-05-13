@@ -48,7 +48,7 @@ module.exports = function Model() {
 			function closureCallback(model) {
 				return function(res) {
 					for(var column in res[0]) {
-						if(!(column in model.data)) {
+						if(model.hidden.indexOf(column) == -1) {
 							model.data[column] = res[0][column];
 						}
 					};
