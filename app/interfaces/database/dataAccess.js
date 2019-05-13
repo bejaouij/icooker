@@ -24,7 +24,7 @@ function PostgresDataAccess() {
 		        let res = await ((this.queryBindings.length > 0) ? statement.query( ...this.queryBindings) : statement.query());
 		        callback(res);
 		    } catch (error) {
-		        console.log(error);
+		        callback(error);
 		    } finally {
 		        await connection.close();
 		    }

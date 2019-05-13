@@ -2,7 +2,7 @@ let postgresDataAccess = require('../interfaces/database/dataAccess').postgresql
 let htmlHelper = require('../interfaces/html/htmlHelper');
 let databaseConfig = require('../config/config').database;
 
-function dataAccessExecClosure(model) {
+function dataAccessFindClosure(model) {
 	return function(res) {
 		for(var columnName in res) {
 			if(res[columnName] in model.hidden) {
@@ -47,11 +47,7 @@ module.exports = function Model() {
 			postgresDataAccess.query = 'SELECT * FROM ' + databaseConfig.schema + '.' + this.table + ' WHERE ' + this.primaryKey + ' = ?';
 			postgresDataAccess.queryBindings = [id];
 
-			postgresDataAccess.exec(dataAccessExecClosure(this));
-
-			return true;
+			postgresDataAccess.exec(dataAccessFindClosure(this));
 		}
-
-		return false;
 	};
 };
