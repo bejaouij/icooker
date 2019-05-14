@@ -406,4 +406,46 @@ module.exports = function Model() {
 			});
 		}
 	}
+
+	/*
+	 * void dataToObject(data: (Array | Object), callback: function)
+	 *
+	 * Parsed the data into an an object or an object collection.
+	 *
+	 * @params: - data: data to parse.
+	 *          - callback: function to call at the end of the process with the saved object.
+	 * @pre: - callback method must accept at least one parameter.
+	 * @post: - if the data are an object, return a parsed object model.
+	 *        - if the data are an array, return a parsed object model array.
+	 */
+	this.dataToObject = function(data, callback) {
+		if(typeof data == 'Object') {
+			for(var column in data) {
+				if(this.hidden.indexOf(column) != -1) {
+					this.data[column] = data[column];
+				}
+			}
+
+			callback(this);
+		}
+		else {
+			let models = [];
+			let currentModel = this; // Useful to call the current object inside a closure.
+			var i = 0;
+
+			for(i = 0; i < data.length; i++) {
+				models.push(new currentModel.constructor);
+
+				for(var column in data[i]) {
+					/* If the current column is not declared as hidden */
+					if(currentModel.hidden.indexOf(column) == -1) {
+						models[i].data[column] = data[i][column];
+					}
+					////////////////////
+				}
+			}
+
+			callback(models);
+		}
+	};
 };
