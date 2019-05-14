@@ -408,6 +408,31 @@ module.exports = function Model() {
 	}
 
 	/*
+	 * void query(query: string, queryBindings: Array, callback: function)
+	 *
+	 * Execute a query in te database.
+	 *
+	 * @params: - query: query to execute.
+	 *          - queryBindings: query bindings.
+	 *          - callback: function to call at the end of the process with the saved object.
+	 * @pre: - callback method must accept at least one parameter.
+	 * @post: - if no record is found, return an empty array.
+	 *        - if one record is found, return the parsed object.
+	 *        - if more than one record are found, return a parsed objects array.
+	 */
+	this.query = function(query, queryBindings, callback) {
+		let currentModel = this; // Useful to call the current object inside a closure.
+		postgresDataAccess.query = query;
+		postgresDataAccess.queryBindings = queryBindings;
+
+		postgresDataAccess.exec(function(res) {
+			currentModel.dataToObject(res, function(res) {
+				callback(res);
+			});
+		});
+	};
+
+	/*
 	 * void dataToObject(data: (Array | Object), callback: function)
 	 *
 	 * Parsed the data into an an object or an object collection.
