@@ -24,7 +24,7 @@ function PostgresDataAccess() {
 		'psql': 'database-js-postgres'
 	};
 
-	this.dataChecking = function(value, XSSSensitive, dataType) {
+	this.dataChecking = function(value, XSSSensitive, dataType = 'string') {
 		switch(dataType) {
 			case 'integer':
 			return isNaN(value) ? false : value;

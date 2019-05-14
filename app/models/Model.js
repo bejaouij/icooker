@@ -21,6 +21,7 @@ module.exports = function Model() {
 	this.hidden = [
 		'password'
 	];
+	this.XSSSensitive = []; // Fields to protect against XSS attacks.
 
 	this.data = []; // Store the retrieved visible data.
 
@@ -174,4 +175,202 @@ module.exports = function Model() {
 			callback(models);
 		});
 	}
+
+	/*
+	 * void checkData(callback: function)
+	 *
+	 * Inform whether the current object data are valid and formate them.
+	 *
+	 * @params: callback: function to call at the end of the process with the checked object.
+	 * @pre: callback method must accept at least one parameter.
+	 * @post: - lead to a false value is data are not valid.
+	 *        - lead to formatted object if these data are valid.
+	 */
+	this.checkData = function(callback) {
+		let initialData = this.data; // Useful to keep the first "version" of the data. Checking methods can alter them.
+		var dataValid = true;
+
+		var i = 0;
+
+		while(dataValid && i < this.data.length) {
+			let isXSSSensitive = this.XSSSensitive.indexOf(this.data[i]) != -1
+
+			if((this.data[i] = postgresDataAccess.dataChecking(this.data[i], isXSSSensitive)) == false) {
+				dataValid = false;
+			}
+
+			i++;
+		}
+
+		callback((!dataValid) ? false : this);
+	}
+
+	/*
+	 * void insert([callback: function])
+	 *
+	 * Insert the current object data in the database.
+	 *
+	 * @params: callback: function to call at the end of the process with the inserted object
+	 * @pre: callback method must accept at least one parameter.
+	 * @post: - create a new record.
+	 *        - lead to a 103 error code if data are not valid.
+	 */
+	this.insert = function(callback = undefined) {
+		let currentModel = this; // Useful to call the current object inside a closure.
+		let initialData = this.data;
+
+		this.checkData(function(res) {
+			if(!res) {
+				if(typeof callback != 'undefined') {
+					let code = 103;
+
+					callback({
+						ERROR_CODE: code,
+						ERROR_MESSAGE: errorCode[code],
+						RELATED_OBJECT: initialData
+					});
+				}
+			}
+			else {
+				var query = 'INSERT INTO ' + databaseConfig.schema + '.' + res.table;
+				var sqlColumns = '(';
+				var sqlValues = 'VALUES(';
+
+				for(var column in res.data) {
+					if(typeof(res.data[column]) != 'undefined') {
+						sqlColumns += column + ',';
+						sqlValues += '\'' + res.data[column] + '\',';
+					}
+				}
+
+				sqlColumns = sqlColumns.substring(0, sqlColumns.length - 1) + ')';
+				sqlValues = sqlValues.substring(0, sqlValues.length - 1) + ')';
+
+				query += sqlColumns + ' ' + sqlValues;
+				query += ' RETURNING ' + res.primaryKey;
+
+				postgresDataAccess.query = query;
+				postgresDataAccess.queryBindings = [];
+				postgresDataAccess.exec(function(res) {
+					if(res.length > 0) {
+						if(typeof res[0][currentModel.primaryKey] != 'undefined') {
+							currentModel.data[currentModel.primaryKey] = res[0][currentModel.primaryKey];
+						}
+					}
+
+					callback(currentModel);
+				});
+			}
+		});
+	};
+
+	/*
+	 * void update([callback: function])
+	 *
+	 * Update the current object data in the database.
+	 *
+	 * @params: callback: function to call at the end of the process with the updated object
+	 * @pre: callback method must accept at least one parameter.
+	 * @post: - update related record.
+	 *        - lead to a 103 error code if data are not valid.
+	 */
+	this.update = function(callback = undefined) {
+		let currentModel = this; // Useful to call the current object inside a closure.
+
+		let initialData = this.data;
+
+		this.checkData(function(res) {
+			if(!res) {
+				if(typeof callback != 'undefined') {
+					let code = 103;
+
+					callback({
+						ERROR_CODE: code,
+						ERROR_MESSAGE: errorCode[code],
+						RELATED_OBJECT: initialData
+					});
+				}
+			}
+			else {
+				var query = 'UPDATE ' + databaseConfig.schema + '.' + res.table + ' SET ';
+				var queryBindings = [];
+
+				for(var column in res.data) {
+					if(typeof(res.data[column]) != 'undefined') {
+						query += column + ' = ?,';
+						queryBindings.push(res.data[column]);
+					}
+				}
+
+				query = query.substring(0, query.length - 1);
+
+				query += ' ';
+				query += ' WHERE ' + res.primaryKey + ' = ?';
+				queryBindings.push(res.data[res.primaryKey]);
+
+				postgresDataAccess.query = query;
+				postgresDataAccess.queryBindings = queryBindings;
+				postgresDataAccess.exec(function(res) {
+					callback(currentModel);
+				});
+			}
+		});
+	};
+
+	/*
+	 * void save([callback: function])
+	 *
+	 * Save the current object data in the database.
+	 *
+	 * @params: callback: function to call at the end of the process with the saved object
+	 * @pre: - callback method must accept at least one parameter.
+	 *       - model data must be valid.
+	 * @post: - if the identifier is not defined or does not exist in the database, create a new record.
+	 *        - if the identifer exists, update its record.
+	 *        - lead to a 103 error code if data are not valid.
+	 *        - throw error if the table does not exist in the database.
+	 */
+	this.save = function(callback = undefined) {
+		let currentModel = this; // Useful to call the current object inside a closure.
+
+		/* Case where object record does not exist in the database */
+		if(typeof this.data[this.primaryKey] == 'undefined') {
+			this.insert(function(res) {
+				if(typeof res.data == 'undefined') {
+					callback(res);
+				}
+				else {
+					callback(currentModel);
+				}
+			});
+		}
+		////////////////////
+		else {
+			storedModel = new this.constructor;
+			storedModel.find(this.data[this.primaryKey], function(res) {
+				/* Case where object record does not exist in the database */
+				if(typeof res.data[res.primaryKey] == 'undefined') {
+					currentModel.insert(function(res) {
+						if(typeof res.data == 'undefined') {
+							callback(res);
+						}
+						else {
+							callback(currentModel);
+						}
+					});
+				}
+				////////////////////
+				else {
+					currentModel.update(function(res) {
+						if(typeof res.data == 'undefined') {
+							callback(res);
+						}
+						else {
+							callback(currentModel);
+						}
+					});
+				}
+			});
+		}
+	};
 };
