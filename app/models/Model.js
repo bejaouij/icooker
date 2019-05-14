@@ -373,4 +373,37 @@ module.exports = function Model() {
 			});
 		}
 	};
+
+	/*
+	 * void delete([callback: function])
+	 *
+	 * Delete the current object data from the database.
+	 *
+	 * @params: callback: function to call at the end of the process with the saved object
+	 * @pre: - callback method must accept at least one parameter.
+	 *       - model identifier must be informed.
+	 * @post: - if the identifier is not defined lead to a 104 error code.
+	 *        - if the identifier is defined and exist in the database, delete the corresponding record and lead to a true value.
+	 *        - if the identifier is defined but does not exist in the database, lead to a false value.
+	 */
+	this.delete = function(callback = 'undefined') {
+		if(typeof this.data[this.primaryKey] == 'undefined') {
+			let code = 104;
+
+			callback({
+				ERROR_CODE: code,
+				ERROR_MESSAGE: errorCode[code],
+				RELATED_OBJECT: this.primaryKey + ': ' + this.primaryKeyType + ' -> ' + this.data[this.primaryKey]
+			});
+		}
+		else {
+			postgresDataAccess.query = 'DELETE FROM ' + databaseConfig.schema + ' . ' + this.table
+				+ ' WHERE ' + this.primaryKey + ' = ? RETURNING ' + this.primaryKey;
+			postgresDataAccess.queryBindings = [this.data[this.primaryKey]];
+
+			postgresDataAccess.exec(function(res) {
+				callback(res.length > 0);
+			});
+		}
+	}
 };
