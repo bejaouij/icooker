@@ -10,6 +10,15 @@ let route = {
 				action: 'index'
 			}
 		}
+	},
+	'/api/login': {
+		name: 'login',
+		verbs: {
+			PUT: {
+				controller: 'APIAuthController',
+				action: 'authentication'
+			}
+		}
 	}
 }
 
