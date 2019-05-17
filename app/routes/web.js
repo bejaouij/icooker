@@ -22,14 +22,10 @@ let route = {
 	}
 }
 
-module.exports = function(page, method, params, body, callback) {
+module.exports = function(page, method, data, callback) {
 	var Controller;
 	var controllerName;
 	var action;
-	var data = {
-		params: params,
-		body: body
-	}
 
 	if(typeof route[page] == 'undefined') {
 		controllerName = 'ErrorHTTPController';

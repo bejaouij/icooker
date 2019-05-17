@@ -13,7 +13,14 @@ var server = http.createServer(function(req, res) {
     });
 
     req.on('end', function() {
-        routing(page, req.method, params, body, function(response) {
+    	let remoteIpAddress = (req.connection.remoteAddress.substring(req.connection.remoteAddress.lastIndexOf(':') + 1, req.connection.remoteAddress.length - 1));
+
+    	data = {
+    		params: params,
+    		body: body,
+    		ipAddress: remoteIpAddress
+    	}
+        routing(page, req.method, data, function(response) {
 			res.writeHead(response.httpCode, {'Content-Type': response.contentType});
 			res.end(response.content);
 		});
