@@ -1,5 +1,9 @@
 # Versions
 
+## 0.3.0
+
+* Add a secure authentication process.
+
 ## 0.2.0
 
 * MVC behaviour adding.
