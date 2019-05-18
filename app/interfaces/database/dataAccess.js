@@ -67,6 +67,7 @@ function PostgresDataAccess() {
 		        callback(res);
 		    } catch (error) {
 		        callback(error);
+		        console.log(error);
 		    } finally {
 		        await connection.close();
 		    }

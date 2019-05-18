@@ -55,7 +55,8 @@ module.exports = function(page, method, data, callback) {
 		callback({
 			httpCode: res.httpCode,
 			contentType: res.contentType,
-			content: res.content
+			content: res.content,
+			cookieData: res.cookieData
 		});
 	});
 };

@@ -1,6 +1,7 @@
 let sjcl = require('sjcl');
 let APIController = require('./APIController');
 let error = require('../../interfaces/error/error');
+let cookieHelper = require('../../interfaces/cookie/cookie');
 
 let User = require('../../models/User');
 let ConnectionAttempt = require('../../models/ConnectionAttempt');
@@ -56,7 +57,7 @@ module.exports = function ErrorHTTPController() {
 					else {
 						var user = new User();
 
-						user.where('user_email', '=', data.body.user_email, function(res) {
+						user.where('user_email', '=', data.body.user_email.toLowerCase(), function(res) {
 							var connectionAttempt = new ConnectionAttempt();
 							connectionAttempt.data.connection_attempt_ip_address = data.ipAddress;
 
@@ -72,6 +73,7 @@ module.exports = function ErrorHTTPController() {
 								});
 							}
 							else {
+								user = res[0];
 								/* Password hashing */
 								let output = sjcl.hash.sha256.hash(data.body.user_password);
 								data.body.user_password = sjcl.codec.hex.fromBits(output).toUpperCase();
@@ -92,11 +94,17 @@ module.exports = function ErrorHTTPController() {
 									connectionAttempt.data.connection_attempt_success = true;
 
 									connectionAttempt.save(function(res) {
-										callback({
-											httpCode: 200,
-											contentType: 'application/json',
-											content: JSON.stringify({'test': 'testAuth'})
+										/* Store the user connection session token */
+										user.data.user_session_token = cookieHelper.generateToken(32);
+
+										user.save(function(res) {
+											callback({
+												httpCode: 200,
+												contentType: 'application/json',
+												cookieData: { 'icooker-token': user.data.user_session_token }
+											});
 										});
+										////////////////////
 									});
 								}
 							}

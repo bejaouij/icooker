@@ -237,9 +237,12 @@ module.exports = function Model() {
 				var sqlValues = 'VALUES(';
 
 				for(var column in res.data) {
-					if(typeof(res.data[column]) != 'undefined') {
+					if(typeof(res.data[column]) != 'undefined' && res.data[column] != null) {
 						sqlColumns += column + ',';
 						sqlValues += '\'' + res.data[column] + '\',';
+					}
+					else {
+						query += column + ' = NULL,';
 					}
 				}
 
@@ -296,9 +299,12 @@ module.exports = function Model() {
 				var queryBindings = [];
 
 				for(var column in res.data) {
-					if(typeof(res.data[column]) != 'undefined') {
+					if(typeof(res.data[column]) != 'undefined' && res.data[column] != null) {
 						query += column + ' = ?,';
 						queryBindings.push(res.data[column]);
+					}
+					else {
+						query += column + ' = NULL,';
 					}
 				}
 
