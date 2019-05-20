@@ -11,12 +11,39 @@ let route = {
 			}
 		}
 	},
-	'/api/login': {
+	'/api/user/login': {
 		name: 'login',
 		verbs: {
 			PUT: {
 				controller: 'APIAuthController',
 				action: 'authentication'
+			}
+		}
+	},
+	'/api/user/signin': {
+		name: 'signin',
+		verbs: {
+			POST: {
+				controller: 'APIAuthController',
+				action: 'signin'
+			}
+		}
+	},
+	'/api/user/logout': {
+		name: 'logout',
+		verbs: {
+			PUT: {
+				controller: 'APIAuthController',
+				action: 'logout'
+			}
+		}
+	},
+	'/api/user/session_status': {
+		name: 'user_session_status',
+		verbs: {
+			GET: {
+				controller: 'APIAuthController',
+				action: 'sessionStatus'
 			}
 		}
 	}

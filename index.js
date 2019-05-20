@@ -10,7 +10,7 @@ var server = http.createServer(function(req, res) {
 	let params = querystring.parse(url.parse(req.url).query);
 	let body = '';
     let cookieData = cookie.parse(req.headers.cookie || '');
-
+    
     /* Static resources requests */
     if(page.indexOf('.css') != -1 || page.indexOf('.js') != -1) {
         fs.readFile(__dirname + page, function(error, content) {

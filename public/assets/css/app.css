@@ -1,0 +1,119 @@
+/* Variable definiton */
+* {
+	--bg-gray-color: grey;
+	--orange-color: #FF9106;
+}
+/********************/
+
+/* Default style behaviour */
+header#general-header {
+	background-color: var(--bg-gray-color);
+}
+
+/* Navbar component */
+nav#navbar article {
+	transition: background-color 0.5s;
+}
+
+nav#navbar article:hover {
+	background-color: var(--orange-color);
+}
+/********************/
+/********************/
+
+/* Extra small screen style behaviour */
+/********************/
+
+/* Small and medium screen style behaviour */
+@media(max-width: 991px) {
+	/* Hamburger button component */
+	div#hamburger-button-container {
+		z-index: 1035;
+		width: 40px;
+		max-width: 18%;
+		height: 70px;
+		right: 26px;
+	}
+
+	div#hamburger-button {
+		width: 100%;
+		height: 28px;
+		cursor: pointer;
+	}
+
+	div.stick {
+		position: relative;
+		background-color: var(--orange-color);
+		border-radius: 20px;
+		height: 6px;
+		width: 100%;
+		transform-origin: 50% 50%;
+	  
+		transition-property: transform, opacity, top;
+		transition-duration: 0.5s;
+	}
+
+	div#hamburger-button div.stick:first-child {
+		top: 0px;
+	}
+
+	div#hamburger-button div.stick:nth-child(2) {
+		top: 5px;
+	}
+
+	div#hamburger-button div.stick:last-child {
+		top: 10px;
+	}
+
+	div#hamburger-button.opened div.stick:first-child {
+		top: 12px;
+		transform: rotate(45deg);
+	}
+
+	div#hamburger-button.opened div.stick:nth-child(2) {
+		opacity: 0
+	}
+
+	div#hamburger-button.opened div.stick:last-child {
+		top: 0px;
+		transform: rotate(-45deg);
+	}
+	/********************/
+
+	/* Navbar component */
+	div#hamburger-button-component {
+		display: none;
+	}
+
+	nav#navbar {
+		max-width: 0;
+
+		transition: max-width 0.5s;
+	}
+
+	nav#navbar * {
+		overflow-x: hidden;
+	}
+
+	nav#navbar > div {
+		-moz-box-shadow: none;
+   		-webkit-box-shadow: none;
+   		box-shadow: none;
+   	}
+
+	nav#navbar.opened > div {
+		-moz-box-shadow: 1px 1px 9px 2px #bbb;
+   		-webkit-box-shadow: 1px 1px 9px 2px #bbb;
+   		box-shadow: 1px 1px 9px 2px #bbb;
+	}
+
+	nav#navbar header {
+		height: 70px;
+	}
+
+	nav#navbar.opened {
+		max-width: 100%;
+	}
+	/********************/
+}
+/*******************

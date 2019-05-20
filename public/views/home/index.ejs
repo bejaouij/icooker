@@ -1,10 +1,165 @@
 <!DOCTYPE html>
-<html>
-<head>
-	<meta charset="utf-8">
-	<title>Test</title>
-</head>
-<body>
-	<h1>Hello World!</h1>
-</body>
+<html lang="fr-FR">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+		<!-- Bootstrap style -->
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<!---->
+
+		<link rel="stylesheet" type="text/css" href="/public/assets/css/app.css">
+		<title>Home - Icooker</title>
+	</head>
+
+	<body>
+		<header id="general-header" class="fixed-top container-fluid p-3">
+			<div class="row">
+				<div id="searchbar-container" class="offset-1 col-8 offset-md-2 p-0">
+					<input type="text" id="searchar" class="form-control" name="searchbar" placeholder="Pâtes, végan etc...">
+				</div>
+			</div>
+		</header>
+
+
+		<nav id="navbar" class="fixed-top container-fluid p-0">
+			<div class="row container-fluid offset-3 col-9 p-0 bg-light">
+				<header class="col-12 mx-1 my-0 border-bottom d-flex flex-column justify-content-center">
+					<span>ICooker</span>
+				</header>
+
+				<article class="col-12 px-3 py-2" data-href="/">Home</article>
+			</div>
+		</nav>
+
+		<div id="hamburger-button-container" class="position-fixed d-flex align-items-center">
+			<div id="hamburger-button">
+				<div class="stick"></div>
+				<div class="stick"></div>
+				<div class="stick"></div>
+			</div>
+		</div>
+
+		<div style="height: 3000px"></div>
+
+		<!-- Login Modal - BEGIN -->
+		<div class="modal fade" id="login_modal" tabindex="-1" role="dialog" aria-labelledby="login_modal_label" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="loginm_modal_label">Login</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+		      
+					<div class="modal-body">
+		        		<form id="login_form" action="#">
+							<div class="form-group">
+								<label for="user_email">Email address</label>
+								<input type="email" class="form-control" id="user_email" aria-describedby="emailHelp" placeholder="Email..." required>
+								
+								<div class="invalid-feedback">
+									Your email address does not match our records.
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label for="user_password">Password</label>
+								<input type="password" class="form-control" id="user_password" placeholder="Password..." required>
+
+								<div class="invalid-feedback">
+									Your password does not match with your address email.
+								</div>
+							</div>
+
+							<small class="general-information text-danger"></small>
+							
+							<button type="submit" id="login_submit_btn" class="btn btn-primary sr-only">Submit</button>
+						</form>
+					</div>
+		      
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+						<button type="button" id="login_custom_submit_btn" class="btn btn-primary">Connect</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Login Modal - END -->
+
+		<!-- Signin Modal - BEGIN -->
+		<div class="modal fade" id="signin_modal" tabindex="-1" role="dialog" aria-labelledby="signin_modal_label" aria-hidden="true">
+			<div class="modal-dialog modal-dialog-centered" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<h5 class="modal-title" id="signinm_modal_label">Sign in</h5>
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+					</div>
+		      
+					<div class="modal-body">
+		        		<form id="signin_form" action="#">
+							<div class="form-group">
+								<label for="signin_user_email">Email address<span class="text-danger">*</span></label>
+								<input type="email" class="form-control" id="signin_user_email" aria-describedby="emailHelp" placeholder="Email..." required>
+								
+								<div class="invalid-feedback">
+									Your email address is not valid or already taken.
+								</div>
+							</div>
+							
+							<div class="form-group">
+								<label for="signin_user_password">Password<span class="text-danger">*</span></label>
+								<input type="password" class="form-control" id="signin_user_password" placeholder="Password..." required>
+
+								<div class="invalid-feedback">
+									Your password is not valid. It must contains at least 6 alphanumeric (a-Z | A-Z | 0-9) characters.
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="signin_user_password_confirmation">Confirm password<span class="text-danger">*</span></label>
+								<input type="password" class="form-control" id="signin_user_password_confirmation" placeholder="Password confirmation..." required>
+
+								<div class="invalid-feedback">
+									Your password and its confirmation does not match.
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="signin_user_nickname">Nickname<span class="text-danger">*</span></label>
+								<input type="text" class="form-control" id="signin_user_nickname" placeholder="Name..." required>
+								<small class="form-text text-muted">It is not mendatory to give your real name. The name on the application is just used to humanly identify your profile.</small>
+
+								<div class="invalid-feedback">
+									Your nickname is not valid.
+								</div>
+							</div>
+
+							<small class="general-information text-danger"></small>
+							
+							<button type="submit" id="signin_submit_btn" class="btn btn-primary sr-only">Submit</button>
+						</form>
+					</div>
+		      
+					<div class="modal-footer">
+						<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+						<button type="button" id="signin_custom_submit_btn" class="btn btn-primary">Sign in</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Signin Modal - END -->
+
+		<!-- Bootstrap and dependencies javascript -->
+		<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+		<!---->
+
+		<script type="text/javascript" src="/public/assets/js/lib/XHR.js"></script>
+		<script type="text/javascript" src="/public/assets/js/home/app.js"></script>
+	</body>
 </html>
